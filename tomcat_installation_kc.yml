@@ -1,0 +1,40 @@
+---
+   - name: apache tomcat installation
+     hosts: localhost
+     tasks: 
+       - name: update
+         shell: apt-get update
+       
+       - name: install jdk
+         apt: 
+           name: default-jdk
+           state: present
+         
+       - name: add group for tomcat
+         shell: sudo groupadd tomcat && sudo mkdir /opt/tomcat
+         
+       - name: add user for tomcat
+         shell: sudo useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
+           
+       - name: Download tomcat
+         get_url: 
+           url: https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.79/bin/apache-tomcat-8.5.79.tar.gz
+           dest: /tmp
+           mode: 744
+           validate_certs: no
+           
+       - name: extract tomcat
+         unarchive:
+           src: /tmp/apache-tomcat-8.5.79.tar.gz
+           dest: /opt/tomcat/
+           
+       - name: set permissions on directories for tomcat
+         script: permissions.sh
+         
+       - name: copy tomcat service file
+         copy: 
+           src: /root/myplaybooks/tomcat.service
+           dest: /etc/systemd/system/tomcat.service
+           
+       - name: reload tomcat service file
+         shell: sudo systemctl daemon-reload

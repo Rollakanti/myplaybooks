@@ -1,0 +1,17 @@
+---
+   - name: restarting apache server
+     hosts: localhost
+     vars: 
+       - action: restart
+     tasks:  
+         - name: restart apache
+           command: systemctl restart apache2
+           when: action=="restart"
+           
+         - name: stop apache
+           command: systemctl stop apache2
+           when: action=="stop"
+           
+         - name: start apache
+           command: systemctl start apache2
+           when: action=="start"
